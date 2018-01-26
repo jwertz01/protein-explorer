@@ -1,0 +1,32 @@
+.mono {
+  font-family: monospace;
+  font-size: 16px;
+}
+
+.select-top-left {
+  border-top:2px solid #000;
+  border-left:2px solid #000;
+}
+
+.select-top-right {
+  border-top:2px solid #000;
+  border-right:2px solid #000;
+}
+
+.select-top {
+  border-top:2px solid #000;
+}
+
+.select-bottom-left {
+  border-bottom:2px solid #000;
+  border-left:2px solid #000;
+}
+
+.select-bottom-right {
+  border-bottom:2px solid #000;
+  border-right:2px solid #000;
+}
+
+.select-bottom {
+  border-bottom:2px solid #000;
+}
