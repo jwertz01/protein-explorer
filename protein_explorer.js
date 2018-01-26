@@ -107,7 +107,7 @@ function draw_letter(index, character, level, annotations) {
       
     /*Create background gradient with all relevant modification categories
   e.g.  letter.style = "background:linear-gradient(to bottom, red 0%, red 33%, orange 33%, orange 66%, yellow 66%, yellow 100%);" */
-      var style_str = "text-shadow: -.5px 0 white, 0 .5px white, .5px 0 white, 0 -.5px white;background:linear-gradient(to bottom, ";
+      var style_str = "text-shadow: -.5px 0 white, 0 .5px white, .5px 0 white, 0 -.5px white;background:linear-gradient(to right, ";
       for (var i = 0; i < curr_colors_sorted.length; i++) {
         style_str += curr_colors_sorted[i] + " " + 100.0 * i / curr_colors_sorted.length + "%, " + curr_colors_sorted[i] + " " + 100.0 * (i + 1) / curr_colors_sorted.length + "%, ";
       }
