@@ -100,8 +100,8 @@ function level_to_color(level,log_scale = false) {
 }
 
 function draw_letter(index, character, level, annotations) {
-  var letter = document.createElement("span");
-  letter.class = "character";
+  var letter = document.createElement("div");
+  letter.className = "character";
   var curr_colors = [];
   for (k = 0; k < annotations.length; k++) {
     var annotation_num = annotation_to_pos[annotations[k]];
@@ -149,8 +149,13 @@ function draw_sequence(sequence,annotation_considered,selection) {
   var header_chars = 0;
   var current_index = 0;
   var header_progress = 0;
+  var line_div = document.createElement("div");
+  line_div.className = "line_elem";
   for (i = 0; i < seq.characters.length; i++) {
-      if (header_flag) {
+      var tall_span = document.createElement("div");
+      tall_span.className = "outer";
+      // if (header_flag) {
+
         var outline_class = ""
         var outline_class_sp = ""
         if (i == selection[0]) {
@@ -168,60 +173,74 @@ function draw_sequence(sequence,annotation_considered,selection) {
         header_chars += 1;
         var spacing_idx = i % space_width;
         if (spacing_idx < space_width - 1 - Math.floor(Math.log10(i+10))){
-          var space = document.createElement("span");
+          var space = document.createElement("div");
           space.innerHTML = "&nbsp";
-          space.className = outline_class;
-          sequence_html.appendChild(space);
+          space.className = outline_class + " character number";
+          tall_span.appendChild(space);
         } else {
-          var header_number = document.createElement("span");
+          var header_number = document.createElement("div");
           header_number.innerHTML = (i - i%space_width + 10).toString()[header_progress];
-          header_number.className = outline_class;
-          sequence_html.appendChild(header_number);
+          header_number.className = outline_class + " character number";
+          tall_span.appendChild(header_number);
           header_progress += 1;
         }
         if (i % space_width == space_width - 1) {
-          var space = document.createElement("span");
-          space.innerHTML = "&nbsp";
-          space.className = outline_class_sp;
-          sequence_html.appendChild(space);
           header_progress = 0;
         }
-        if (i % char_width == char_width - 1 || i == seq.characters.length - 1) {
-          sequence_html.appendChild(document.createElement("br"));
-          header_flag = false;
-          i -= header_chars;
-          header_chars = 0;
-        }
-      } else {
+        // tall_span.appendChild(document.createElement("br"))
+        // if (i % char_width == char_width - 1 || i == seq.characters.length - 1) {
+        //   sequence_html.appendChild(document.createElement("br"));
+        //   header_flag = false;
+        //   i -= header_chars;
+        //   header_chars = 0;
+        // }
         var outline_class = ""
         var outline_class_sp = ""
+        var outline_class_sp_top = ""
+        var outline_class_sp_bottom = ""
         if (i == selection[0]) {
           outline_class = "select-bottom-left"
           outline_class_sp = "select-bottom"
+          outline_class_sp_top = "select-top"
+          outline_class_sp_bottom = "select-bottom"
         } else if (i == selection[1]) {
           outline_class = "select-bottom-right"
         } else if (i > selection[0] && i < selection[1]) {
           outline_class = "select-bottom"
-          outline_class_sp = "select-bottom"
+          outline_class_sp = "select-bottom select-top"
+          outline_class_sp_top = "select-top"
+          outline_class_sp_bottom = "select-bottom"
         }
         var letter = draw_letter(i,seq.characters[i],seq.levels[i],seq.annotations[i]);
         letter.className = letter.className + " " + outline_class;
-        sequence_html.appendChild(letter);
+        tall_span.appendChild(letter);
         if (i % char_width == char_width - 1 || i == seq.characters.length - 1) {
            outline_class_sp = ""
         }
+
+        line_div.appendChild(tall_span);
+
         if (i % space_width == space_width - 1) {
-          var space = document.createElement("span");
-          space.innerHTML = "&nbsp";
-          space.className = outline_class_sp;
-          sequence_html.appendChild(space)
+          var space = document.createElement("div");
+          var inner_space1 = document.createElement("div");
+          var inner_space2 = document.createElement("div");
+          inner_space1.innerHTML = "&nbsp";
+          inner_space1.className = outline_class_sp_top + " number";
+          inner_space2.innerHTML = "&nbsp";
+          inner_space2.className = outline_class_sp_bottom + " character";
+          space.appendChild(inner_space1);
+          space.appendChild(inner_space2);
+          space.className = "outer";
+          line_div.appendChild(space)
         }
         if (i % char_width == char_width - 1) {
-          sequence_html.appendChild(document.createElement("br"));
-          header_flag = true;
+          sequence_html.appendChild(line_div);
+          line_div = document.createElement("div");
+          line_div.className = "line_elem";
         }
-      }
-
+        if (i == seq.characters.length - 1 && i % char_width != char_width - 1) {
+          sequence_html.appendChild(line_div);
+        }
     }
 }
 

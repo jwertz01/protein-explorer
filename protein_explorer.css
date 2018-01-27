@@ -30,3 +30,22 @@
 .select-bottom {
   border-bottom:2px solid #000;
 }
+
+.character {
+	width: 20px;
+}
+
+.outer {
+	float: left;
+}
+
+.line_elem {
+	float: none;
+	width: 100%;
+	height: 60px;
+}
+
+.number {
+	font-size: 12px;
+	text-align: center;
+}
