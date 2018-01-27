@@ -10,12 +10,20 @@ function display_position(pos,character) {
   message_html.innerHTML = "Clicked on amino acid " + character  + " at position " + (pos+1);
 }
 
+function swap_clicked(is_clicked, object) {
+  if (is_clicked) {
+    object.style.backgroundColor = 'white';
+  } else {
+    object.style.backgroundColor = '#F8F9F9';
+  }
+}
+
 function display_annotation_list(annotations) {
-  console.log(window.innerWidth);
   var annotations_html = document.getElementById("annotation_list");
     var annotation_one = document.createElement("div");
     annotation_one.innerHTML = annotations[0];
     annotation_one.addEventListener('click',function() {
+      swap_clicked(display_annotations[0],annotation_one);
       display_annotations[0] = !display_annotations[0];
       draw_sequence(seq,annotations[0],selection);
     });
@@ -25,6 +33,7 @@ function display_annotation_list(annotations) {
     var annotation_two = document.createElement("div");
     annotation_two.innerHTML = annotations[1];
     annotation_two.addEventListener('click',function() {
+      swap_clicked(display_annotations[1],annotation_two);
       display_annotations[1] = !display_annotations[1];
       draw_sequence(seq,annotations[1],selection);
     });
@@ -34,7 +43,8 @@ function display_annotation_list(annotations) {
      var annotation_three = document.createElement("div");
     annotation_three.innerHTML = annotations[2];
     annotation_three.addEventListener('click',function() {
-      display_annotations[2] = !display_annotations[2];     
+      swap_clicked(display_annotations[2],annotation_three);
+      display_annotations[2] = !display_annotations[2];
       draw_sequence(seq,annotations[2],selection);
     });
     annotation_three.style.color = annotation_colors[2];
@@ -43,7 +53,8 @@ function display_annotation_list(annotations) {
     var annotation_four = document.createElement("div");
     annotation_four.innerHTML = annotations[3];
     annotation_four.addEventListener('click',function() {
-      display_annotations[3] = !display_annotations[3];     
+      swap_clicked(display_annotations[3],annotation_four);
+      display_annotations[3] = !display_annotations[3];
       draw_sequence(seq,annotations[3],selection);
     });
     annotation_four.style.color = annotation_colors[3];
@@ -52,7 +63,8 @@ function display_annotation_list(annotations) {
          var annotation_five = document.createElement("div");
     annotation_five.innerHTML = annotations[4];
     annotation_five.addEventListener('click',function() {
-      display_annotations[4] = !display_annotations[4];     
+      swap_clicked(display_annotations[4],annotation_five);
+      display_annotations[4] = !display_annotations[4];
       draw_sequence(seq,annotations[4],selection);
     });
     annotation_five.style.color = annotation_colors[4];
@@ -61,7 +73,8 @@ function display_annotation_list(annotations) {
          var annotation_six = document.createElement("div");
     annotation_six.innerHTML = annotations[5];
     annotation_six.addEventListener('click',function() {
-      display_annotations[5] = !display_annotations[5];     
+      swap_clicked(display_annotations[5],annotation_six);
+      display_annotations[5] = !display_annotations[5];
       draw_sequence(seq,annotations[5],selection);
     });
     annotation_six.style.color = annotation_colors[5];
@@ -70,7 +83,8 @@ function display_annotation_list(annotations) {
          var annotation_seven = document.createElement("div");
     annotation_seven.innerHTML = annotations[6];
     annotation_seven.addEventListener('click',function() {
-      display_annotations[6] = !display_annotations[6];     
+      swap_clicked(display_annotations[6],annotation_seven);
+      display_annotations[6] = !display_annotations[6];
       draw_sequence(seq,annotations[6],selection);
     });
     annotation_seven.style.color = annotation_colors[6];
@@ -95,7 +109,7 @@ function draw_letter(index, character, level, annotations) {
       curr_colors.push(annotation_colors[annotation_num]);
     }
    }
-  
+
   //sort curr_colors by order of annotation_colors
   if (curr_colors.length > 0) {
       var curr_colors_sorted = [];
@@ -104,7 +118,7 @@ function draw_letter(index, character, level, annotations) {
           curr_colors_sorted.push(annotation_colors[k]);
         }
       }
-      
+
     /*Create background gradient with all relevant modification categories
   e.g.  letter.style = "background:linear-gradient(to bottom, red 0%, red 33%, orange 33%, orange 66%, yellow 66%, yellow 100%);" */
       var style_str = "text-shadow: -.5px 0 white, 0 .5px white, .5px 0 white, 0 -.5px white;background:linear-gradient(to right, ";
@@ -116,8 +130,8 @@ function draw_letter(index, character, level, annotations) {
       //letter.style.color = "white";
   }
   letter.style.color = level_to_color(level, false);
-  
- 
+
+
   letter.innerHTML = character;
   letter.addEventListener('click',function() {
     display_position(index,character)
@@ -214,8 +228,10 @@ function draw_sequence(sequence,annotation_considered,selection) {
 seq = {
 'characters':'MRQSLLFLTSVVPFVLAPRPPDDPGFGPHQRLEKLDSLLSDYDILSLSNIQQHSVRKRDLQTSTHVETLLTFSALKRHFKLYLTSSTERFSQNFKVVVVDGKNESEYTVKWQDFFTGHVVGEPDSRVLAHIRDDDVIIRINTDGAEYNIEPLWRFVNDTKDKRMLVYKSEDIKNVSRLQSPKVCGYLKVDNEELLPKGLVDREPPEELVHRVKRRADPDPMKNTCKLLVVADHRFYRYMGRGEESTTTNYLIELIDRVDDIYRNTSWDNAGFKGYGIQIEQIRILKSPQEVKPGEKHYNMAKSYPNEEKDAWDVKMLLEQFSFDIAEEASKVCLAHLFTYQDFDMGTLGLAYVGSPRANSHGGVCPKAYYSPVGKKNIYLNSGLTSTKNYGKTILTKEADLVTTHELGHNFGAEHDPDGLAECAPNEDQGGKYVMYPIAVSGDHENNKMFSNCSKQSIYKTIESKAQECFQERSNKVCGNSRVDEGEECDPGIMYLNNDTCCNSDCTLKEGVQCSDRNSPCCKNCQFETAQKKCQEAINATCKGVSYCTGNSSECPPPGNAEDDTVCLDLGKCKDGKCIPFCEREQQLESCACNETDNSCKVCCRDLSGRCVPYVDAEQKNLFLRKGKPCTVGFCDMNGKCEKRVQDVIERFWDFIDQLSINTFGKFLADNIVGSVLVFSLIFWIPFSILVHCVDKKLDKQYESLSLFHPSNVEMLSSMDSASVRIIKPFPAPQTPGRLQPAPVIPSAPAAPKLDHQRMDTIQEDPSTDSHMDEDGFEKDPFPNSSTAAKSFEDLTDHPVTRSEKAASFKLQRQNRVDSKETEC',
 'levels':[0.8, 0.8, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.7, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.4, 0.4, 0.4, 0.4, 0.9, 0.9, 0.9, 0.9, 0.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.7, 0.7, 0.7, 0.0, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.5, 0.5, 0.5, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.9, 0.9, 0.9, 0.9, 0.9, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.6, 0.6, 0.6, 0.6, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.8, 0.8, 0.8, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.6, 0.6, 0.6, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9],
-annotations:[['Modified residue', 'Active site', 'Binding site', 'Disulfide bond', 'Glycosylation', 'Metal binding', 'Natural variant'], ['Binding site'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], ['Natural variant'], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], ['Metal binding'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Natural variant'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond', 'Glycosylation'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Metal binding', 'Disulfide bond'], ['Disulfide bond', 'Active site'], ['Disulfide bond'], ['Disulfide bond'], ['Metal binding', 'Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Metal binding', 'Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond', 'Glycosylation'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond', 'Glycosylation'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond', 'Glycosylation'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond', 'Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], [], ['Disulfide bond'], ['Disulfide bond', 'Glycosylation'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], []]
+annotations:[[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], ['Natural variant'], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], ['Metal binding'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Natural variant'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Metal binding'], ['Active site'], [], [], ['Metal binding'], [], [], [], [], [], ['Metal binding'], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], ['Disulfide bond'], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], ['Disulfide bond'], ['Glycosylation'], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], []]
 }
 
-draw_sequence(seq,"",selection);
-display_annotation_list(annotation_list);
+function intialize() {
+  draw_sequence(seq,"",selection);
+  display_annotation_list(annotation_list);
+}
