@@ -100,8 +100,7 @@ function level_to_color(level,log_scale = false) {
 }
 
 function draw_letter(index, character, level, annotations) {
-  var letter = document.createElement("div");
-  letter.className = "character";
+  var letter = document.createElement("span");
   var curr_colors = [];
   for (k = 0; k < annotations.length; k++) {
     var annotation_num = annotation_to_pos[annotations[k]];
@@ -121,7 +120,7 @@ function draw_letter(index, character, level, annotations) {
 
     /*Create background gradient with all relevant modification categories
   e.g.  letter.style = "background:linear-gradient(to bottom, red 0%, red 33%, orange 33%, orange 66%, yellow 66%, yellow 100%);" */
-      var style_str = "text-shadow: -.5px 0 white, 0 .5px white, .5px 0 white, 0 -.5px white;background:linear-gradient(to right, ";
+      var style_str = "text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;background:linear-gradient(to right, ";
       for (var i = 0; i < curr_colors_sorted.length; i++) {
         style_str += curr_colors_sorted[i] + " " + 100.0 * i / curr_colors_sorted.length + "%, " + curr_colors_sorted[i] + " " + 100.0 * (i + 1) / curr_colors_sorted.length + "%, ";
       }
@@ -141,113 +140,62 @@ function draw_letter(index, character, level, annotations) {
 }
 
 function draw_sequence(sequence,annotation_considered,selection) {
-  var char_width = 50;
   var space_width = 10;
   var sequence_html = document.getElementById("sequence");
   sequence_html.innerHTML = "";
-  var header_flag = true;
-  var header_chars = 0;
-  var current_index = 0;
-  var header_progress = 0;
-  var line_div = document.createElement("div");
-  line_div.className = "line_elem";
+  var letters = document.createElement("span");
   for (i = 0; i < seq.characters.length; i++) {
-      var tall_span = document.createElement("div");
-      tall_span.className = "outer";
-      // if (header_flag) {
+        var outline_class = ""
+        if (i == selection[0]) {
+          outline_class = "select-top select-left select-bottom"
+        } else if (i == selection[1]) {
+          outline_class = "select-top select-right select-bottom"
+        } else if (i > selection[0] && i < selection[1]) {
+          outline_class = "select-top select-bottom"
+        }
+        var seq_block = document.createElement("span");
+        seq_block.className = "outer";
+        var outer_seq_block = document.createElement("span");
+        outer_seq_block.className = "outer";
 
-        var outline_class = ""
-        var outline_class_sp = ""
-        if (i == selection[0]) {
-          outline_class = "select-top-left"
-          outline_class_sp = "select-top"
-        } else if (i == selection[1]) {
-          outline_class = "select-top-right"
-        } else if (i > selection[0] && i < selection[1]) {
-          outline_class = "select-top"
-          outline_class_sp = "select-top"
-        }
-        if (i % char_width == char_width - 1 || i == seq.characters.length - 1) {
-           outline_class_sp = ""
-        }
-        header_chars += 1;
-        var spacing_idx = i % space_width;
-        if (spacing_idx < space_width - 1 - Math.floor(Math.log10(i+10))){
-          var space = document.createElement("div");
-          space.innerHTML = "&nbsp";
-          space.className = outline_class + " character number";
-          tall_span.appendChild(space);
-        } else {
-          var header_number = document.createElement("div");
-          header_number.innerHTML = (i - i%space_width + 10).toString()[header_progress];
-          header_number.className = outline_class + " character number";
-          tall_span.appendChild(header_number);
-          header_progress += 1;
-        }
-        if (i % space_width == space_width - 1) {
-          header_progress = 0;
-        }
-        // tall_span.appendChild(document.createElement("br"))
-        // if (i % char_width == char_width - 1 || i == seq.characters.length - 1) {
-        //   sequence_html.appendChild(document.createElement("br"));
-        //   header_flag = false;
-        //   i -= header_chars;
-        //   header_chars = 0;
-        // }
-        var outline_class = ""
-        var outline_class_sp = ""
-        var outline_class_sp_top = ""
-        var outline_class_sp_bottom = ""
-        if (i == selection[0]) {
-          outline_class = "select-bottom-left"
-          outline_class_sp = "select-bottom"
-          outline_class_sp_top = "select-top"
-          outline_class_sp_bottom = "select-bottom"
-        } else if (i == selection[1]) {
-          outline_class = "select-bottom-right"
-        } else if (i > selection[0] && i < selection[1]) {
-          outline_class = "select-bottom"
-          outline_class_sp = "select-bottom select-top"
-          outline_class_sp_top = "select-top"
-          outline_class_sp_bottom = "select-bottom"
-        }
+        // Update letters
         var letter = draw_letter(i,seq.characters[i],seq.levels[i],seq.annotations[i]);
-        letter.className = letter.className + " " + outline_class;
-        tall_span.appendChild(letter);
-        if (i % char_width == char_width - 1 || i == seq.characters.length - 1) {
-           outline_class_sp = ""
-        }
+        letter.className = outline_class;
+        letters.appendChild(letter);
 
-        line_div.appendChild(tall_span);
-
+        // Display block of position number + letters
         if (i % space_width == space_width - 1) {
-          var space = document.createElement("div");
-          var inner_space1 = document.createElement("div");
-          var inner_space2 = document.createElement("div");
-          inner_space1.innerHTML = "&nbsp";
-          inner_space1.className = outline_class_sp_top + " number";
-          inner_space2.innerHTML = "&nbsp";
-          inner_space2.className = outline_class_sp_bottom + " character";
-          space.appendChild(inner_space1);
-          space.appendChild(inner_space2);
-          space.className = "outer";
-          line_div.appendChild(space)
+          var header_number = document.createElement("div");
+          header_number.innerHTML = (i - i%space_width + 10);
+          header_number.className = "position_number";
+          seq_block.appendChild(header_number);
+
+          // Handle spaces
+          var tall_space = document.createElement("span");
+          var top_space = document.createElement("div");
+          top_space.className = "position_number";
+          var bottom_space = document.createElement("span");
+          bottom_space.className = outline_class;
+          tall_space.className = "outer";
+          top_space.innerHTML = "&nbsp";
+          bottom_space.innerHTML = "&nbsp";
+          tall_space.appendChild(top_space);
+          tall_space.appendChild(bottom_space);
+
+          seq_block.appendChild(letters);
+          outer_seq_block.appendChild(seq_block);
+          outer_seq_block.appendChild(tall_space);
+          sequence_html.appendChild(outer_seq_block);
+          letters = document.createElement("span");
         }
-        if (i % char_width == char_width - 1) {
-          sequence_html.appendChild(line_div);
-          line_div = document.createElement("div");
-          line_div.className = "line_elem";
-        }
-        if (i == seq.characters.length - 1 && i % char_width != char_width - 1) {
-          sequence_html.appendChild(line_div);
-        }
-    }
+  }
+
 }
 
 seq = {
 'characters':'MRQSLLFLTSVVPFVLAPRPPDDPGFGPHQRLEKLDSLLSDYDILSLSNIQQHSVRKRDLQTSTHVETLLTFSALKRHFKLYLTSSTERFSQNFKVVVVDGKNESEYTVKWQDFFTGHVVGEPDSRVLAHIRDDDVIIRINTDGAEYNIEPLWRFVNDTKDKRMLVYKSEDIKNVSRLQSPKVCGYLKVDNEELLPKGLVDREPPEELVHRVKRRADPDPMKNTCKLLVVADHRFYRYMGRGEESTTTNYLIELIDRVDDIYRNTSWDNAGFKGYGIQIEQIRILKSPQEVKPGEKHYNMAKSYPNEEKDAWDVKMLLEQFSFDIAEEASKVCLAHLFTYQDFDMGTLGLAYVGSPRANSHGGVCPKAYYSPVGKKNIYLNSGLTSTKNYGKTILTKEADLVTTHELGHNFGAEHDPDGLAECAPNEDQGGKYVMYPIAVSGDHENNKMFSNCSKQSIYKTIESKAQECFQERSNKVCGNSRVDEGEECDPGIMYLNNDTCCNSDCTLKEGVQCSDRNSPCCKNCQFETAQKKCQEAINATCKGVSYCTGNSSECPPPGNAEDDTVCLDLGKCKDGKCIPFCEREQQLESCACNETDNSCKVCCRDLSGRCVPYVDAEQKNLFLRKGKPCTVGFCDMNGKCEKRVQDVIERFWDFIDQLSINTFGKFLADNIVGSVLVFSLIFWIPFSILVHCVDKKLDKQYESLSLFHPSNVEMLSSMDSASVRIIKPFPAPQTPGRLQPAPVIPSAPAAPKLDHQRMDTIQEDPSTDSHMDEDGFEKDPFPNSSTAAKSFEDLTDHPVTRSEKAASFKLQRQNRVDSKETEC',
 'levels':[0.8, 0.8, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.7, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.4, 0.4, 0.4, 0.4, 0.9, 0.9, 0.9, 0.9, 0.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.7, 0.7, 0.7, 0.0, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.5, 0.5, 0.5, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.9, 0.9, 0.9, 0.9, 0.9, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.6, 0.6, 0.6, 0.6, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.8, 0.8, 0.8, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.6, 0.6, 0.6, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9],
-annotations:[[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], ['Natural variant'], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], ['Metal binding'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Natural variant'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Metal binding'], ['Active site'], [], [], ['Metal binding'], [], [], [], [], [], ['Metal binding'], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], ['Disulfide bond'], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], ['Disulfide bond'], ['Glycosylation'], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], []]
+annotations:[['Modified residue', 'Active site', 'Binding site', 'Disulfide bond', 'Glycosylation', 'Metal binding', 'Natural variant'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], ['Natural variant'], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], ['Metal binding'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Natural variant'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Metal binding'], ['Active site'], [], [], ['Metal binding'], [], [], [], [], [], ['Metal binding'], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], ['Glycosylation'], [], [], [], [], [], [], [], [], [], [], [], ['Glycosylation'], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], ['Disulfide bond'], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], ['Disulfide bond'], [], ['Disulfide bond'], ['Glycosylation'], [], [], [], [], [], ['Disulfide bond'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Modified residue'], [], [], [], [], []]
 }
 
 function intialize() {
