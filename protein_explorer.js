@@ -7,6 +7,7 @@ var annotation_to_pos = {"Modified residue":0,"Active site":1,"Binding site":2,"
 
 function display_position(pos,character) {
   var message_html = document.getElementById("messages");
+  message_html.className = "serif";
   message_html.innerHTML = "Clicked on amino acid " + character  + " at position " + (pos+1);
 }
 
