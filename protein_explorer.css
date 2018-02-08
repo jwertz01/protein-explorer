@@ -3,6 +3,10 @@
   font-size: 22px;
 }
 
+.serif {
+  font-family: serif;
+  font-size: 18px;
+}
 .select-top {
   border-top:2px solid #000;
 }

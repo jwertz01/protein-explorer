@@ -14,13 +14,18 @@ function swap_clicked(is_clicked, object) {
   if (is_clicked) {
     object.style.backgroundColor = 'white';
   } else {
-    object.style.backgroundColor = '#F8F9F9';
+    object.style.backgroundColor = 'lightgray';
   }
 }
 
 function display_annotation_list(annotations) {
-  var annotations_html = document.getElementById("annotation_list");
-    var annotation_one = document.createElement("div");
+    var annotations_html = document.getElementById("annotation_list");
+    var annotations_message = document.createElement("div");
+    annotations_message.innerHTML = "Select site types to highlight:"
+    annotations_message.className = "serif";
+
+    annotations_html.appendChild(annotations_message);
+    var annotation_one = document.createElement("span");
     annotation_one.innerHTML = annotations[0];
     annotation_one.addEventListener('click',function() {
       swap_clicked(display_annotations[0],annotation_one);
@@ -28,9 +33,13 @@ function display_annotation_list(annotations) {
       draw_sequence(seq,annotations[0],selection);
     });
     annotation_one.style.color = annotation_colors[0];
+    annotation_one.className = "serif";
     annotation_one.style.cursor = "pointer";
     annotations_html.appendChild(annotation_one);
-    var annotation_two = document.createElement("div");
+    var space = document.createElement("span");
+    space.innerHTML = "&nbsp";
+    annotations_html.appendChild(space);
+    var annotation_two = document.createElement("span");
     annotation_two.innerHTML = annotations[1];
     annotation_two.addEventListener('click',function() {
       swap_clicked(display_annotations[1],annotation_two);
@@ -38,9 +47,13 @@ function display_annotation_list(annotations) {
       draw_sequence(seq,annotations[1],selection);
     });
     annotation_two.style.color = annotation_colors[1];
+    annotation_two.className = "serif";
     annotation_two.style.cursor = "pointer";
     annotations_html.appendChild(annotation_two);
-     var annotation_three = document.createElement("div");
+    var annotation_three = document.createElement("span");
+    var space = document.createElement("span");
+    space.innerHTML = "&nbsp";
+    annotations_html.appendChild(space);
     annotation_three.innerHTML = annotations[2];
     annotation_three.addEventListener('click',function() {
       swap_clicked(display_annotations[2],annotation_three);
@@ -48,9 +61,13 @@ function display_annotation_list(annotations) {
       draw_sequence(seq,annotations[2],selection);
     });
     annotation_three.style.color = annotation_colors[2];
+    annotation_three.className = "serif";
     annotation_three.style.cursor = "pointer";
     annotations_html.appendChild(annotation_three);
-    var annotation_four = document.createElement("div");
+    var space = document.createElement("span");
+    space.innerHTML = "&nbsp";
+    annotations_html.appendChild(space);
+    var annotation_four = document.createElement("span");
     annotation_four.innerHTML = annotations[3];
     annotation_four.addEventListener('click',function() {
       swap_clicked(display_annotations[3],annotation_four);
@@ -58,10 +75,15 @@ function display_annotation_list(annotations) {
       draw_sequence(seq,annotations[3],selection);
     });
     annotation_four.style.color = annotation_colors[3];
+    annotation_four.className = "serif";
     annotation_four.style.cursor = "pointer";
     annotations_html.appendChild(annotation_four);
-         var annotation_five = document.createElement("div");
+    var space = document.createElement("span");
+    space.innerHTML = "&nbsp";
+    annotations_html.appendChild(space);
+    var annotation_five = document.createElement("span");
     annotation_five.innerHTML = annotations[4];
+    annotation_five.className = "serif";
     annotation_five.addEventListener('click',function() {
       swap_clicked(display_annotations[4],annotation_five);
       display_annotations[4] = !display_annotations[4];
@@ -70,8 +92,12 @@ function display_annotation_list(annotations) {
     annotation_five.style.color = annotation_colors[4];
     annotation_five.style.cursor = "pointer";
     annotations_html.appendChild(annotation_five);
-         var annotation_six = document.createElement("div");
+    var space = document.createElement("span");
+    space.innerHTML = "&nbsp";
+    annotations_html.appendChild(space);
+    var annotation_six = document.createElement("span");
     annotation_six.innerHTML = annotations[5];
+    annotation_six.className = "serif";
     annotation_six.addEventListener('click',function() {
       swap_clicked(display_annotations[5],annotation_six);
       display_annotations[5] = !display_annotations[5];
@@ -80,8 +106,12 @@ function display_annotation_list(annotations) {
     annotation_six.style.color = annotation_colors[5];
     annotation_six.style.cursor = "pointer";
     annotations_html.appendChild(annotation_six);
-         var annotation_seven = document.createElement("div");
+    var space = document.createElement("span");
+    space.innerHTML = "&nbsp";
+    annotations_html.appendChild(space);
+    var annotation_seven = document.createElement("span");
     annotation_seven.innerHTML = annotations[6];
+    annotation_seven.className = "serif";
     annotation_seven.addEventListener('click',function() {
       swap_clicked(display_annotations[6],annotation_seven);
       display_annotations[6] = !display_annotations[6];
