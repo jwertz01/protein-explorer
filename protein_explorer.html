@@ -1,12 +1,28 @@
 <html>
 <head>
   <script src="protein_explorer.js"></script>
+  <script src="lib/jscolor.js"></script>
   <link rel="stylesheet" href="protein_explorer.css" />
 </head>
 <body onload="intialize()">
+  <div id="colors">
+    <!-- <button class="jscolor
+        {valueElement:'valueInputStart', styleElement:'styleInputStart'}">
+        Start Color
+    </button> -->
+    <!-- Value: <input id="valueInput" value="ff6699"><br> -->
+    Intensity Gradient:
+    <input class="jscolor
+        {valueElement:'valueInputStart', styleElement:'styleInputStart'}" id="styleInputStart" onmouseup="updateGradient()">
+   <span class="gradient" id="gradient">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    <input class="jscolor
+        {valueElement:'valueInputEnd', styleElement:'styleInputEnd'}" id="styleInputEnd" onmouseup="updateGradient()">
+  </div>
   <div id="annotation_list" class="mono">
   </div>
   <br/>
+  <h3 id="title" class="mono">
+  </h3>
   <div id="sequence" class="mono">
   </div>
   <br/>

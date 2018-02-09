@@ -1,3 +1,12 @@
+.jscolor {
+	width: 20px;
+	cursor: pointer;
+}
+.gradient {
+	width: 100px;
+	height: 30px;
+}
+
 .mono {
 	font-family: monospace;
   font-size: 22px;
