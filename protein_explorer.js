@@ -1,15 +1,49 @@
-var selection = [203,255];
-var display_annotations = [false,false,false,false,false,false,false,false];
+var selection = [-1,-1];
+var cutoff = {'mod':0,'coverage':0};
+var logscale = {'mod':false,'coverage':false};
+var display_annotations = [false,false,false,false,false,false,false];
 /* var annotation_colors = ["blue","red","green","black","gray","teal","purple"]; */
-var annotation_colors = ["red","orange","gold","green","blue","purple","hotpink","aqua"];
-var annotation_list = ["Modified residue","Active site","Binding site","Disulfide bond","Glycosylation","Metal binding","Natural variant","Found variant"];
-var annotation_to_pos = {"Modified residue":0,"Active site":1,"Binding site":2,"Disulfide bond":3,"Glycosylation":4,"Metal binding":5,"Natural variant":6,"Found variant":7};
+var annotation_colors = ["red","orange","gold","green","blue","purple","hotpink"];
+var annotation_list = ["Modified residue","Active site","Binding site","Disulfide bond","Glycosylation","Metal binding","Natural variant"];
+var annotation_to_pos = {"Modified residue":0,"Active site":1,"Binding site":2,"Disulfide bond":3,"Glycosylation":4,"Metal binding":5,"Natural variant":6};
 var seq;
 
-function updateGradient() {
-  var start_color = document.getElementById("styleInputStart").style.backgroundColor;
-  var end_color = document.getElementById("styleInputEnd").style.backgroundColor;
-  document.getElementById("gradient").style.background = "linear-gradient(to right," + start_color + ", " + end_color + ")";
+function updateCutoff(cutoff_id) {
+  cutoff[cutoff_id] = parseFloat(document.getElementById("cutoff_percent_" + cutoff_id).value);
+  updateGradient(cutoff_id);
+  draw_sequence(seq,"",selection);
+}
+
+function setLogscale(logscale_id) {
+  logscale[logscale_id] = !logscale[logscale_id];
+  draw_sequence(seq,"",selection);
+}
+
+function setSelection() {
+  var url_string = window.location.href
+  var url = new URL(url_string);
+  var selection_start = parseInt(url.searchParams.get("start"));
+  var selection_end = parseInt(url.searchParams.get("end"));
+  if (selection_start + selection_end > 1 && selection_end > selection_start) {
+    if (selection_start <= 0) {
+      selection_start = 1;
+    }
+    if (selection_end > seq.characters.length) {
+      selection_end = seq.characters.length
+    }
+    selection = [selection_start-1, selection_end-1];
+  }
+}
+
+function updateGradient(gradient_id) {
+  var start_color = document.getElementById("styleInputStart_" + gradient_id).style.backgroundColor;
+  var end_color = document.getElementById("styleInputEnd_" + gradient_id).style.backgroundColor;
+  var percent = 100*cutoff[gradient_id];
+  var percent_start = Math.max(100*cutoff[gradient_id]-3,0);
+  document.getElementById("gradient_" + gradient_id).style.background = "linear-gradient(to right, lightgray, lightgray "
+  + percent_start + "%, white "
+  + percent_start + "%, white "
+  + percent + "%," + start_color + " " + percent + "%," + end_color + ")";
   draw_sequence(seq,"",selection);
 }
 
@@ -155,38 +189,45 @@ function display_annotation_list(annotations) {
     annotation_seven.style.color = annotation_colors[6];
     annotation_seven.style.cursor = "pointer";
     annotations_html.appendChild(annotation_seven);
-    var space = document.createElement("span");
-    space.innerHTML = "&nbsp";
-    annotations_html.appendChild(space);
-    var annotation_eight = document.createElement("span");
-    annotation_eight.innerHTML = annotations[7];
-    annotation_eight.className = "serif";
-    annotation_eight.addEventListener('click',function() {
-      swap_clicked(display_annotations[7],annotation_eight);
-      display_annotations[7] = !display_annotations[7];
-      draw_sequence(seq,annotations[7],selection);
-    });
-    annotation_eight.style.color = annotation_colors[7];
-    annotation_eight.style.cursor = "pointer";
-    annotations_html.appendChild(annotation_eight);
+    // var space = document.createElement("span");
+    // space.innerHTML = "&nbsp";
+    // annotations_html.appendChild(space);
+    // var annotation_eight = document.createElement("span");
+    // annotation_eight.innerHTML = annotations[7];
+    // annotation_eight.className = "serif";
+    // annotation_eight.addEventListener('click',function() {
+    //   swap_clicked(display_annotations[7],annotation_eight);
+    //   display_annotations[7] = !display_annotations[7];
+    //   draw_sequence(seq,annotations[7],selection);
+    // });
+    // annotation_eight.style.color = annotation_colors[7];
+    // annotation_eight.style.cursor = "pointer";
+    // annotations_html.appendChild(annotation_eight);
 }
 
-function level_to_color(level,log_scale = false) {
-  var color2 = document.getElementById("styleInputStart").style.backgroundColor.replace(/[^\d,]/g, '').split(',');
-  var color1 = document.getElementById("styleInputEnd").style.backgroundColor.replace(/[^\d,]/g, '').split(',');
-  if (log_scale) {
-    level = Math.log10(level * 9 + 1)
+function level_to_color(level,type) {
+  var rgb = [211,211,211];
+  if (type == 'mod') {
+    var rgb = [255,255,255];
   }
-  var w = level * 2 - 1;
-  var w1 = (w/1+1) / 2;
-  var w2 = 1 - w1;
-  var rgb = [Math.round(parseInt(color1[0]) * w1 + parseInt(color2[0]) * w2),
-      Math.round(parseInt(color1[1]) * w1 + parseInt(color2[1]) * w2),
-      Math.round(parseInt(color1[2]) * w1 + parseInt(color2[2]) * w2)];
+  if (level >= cutoff[type] && cutoff[type] != 1) {
+    level = (level - cutoff[type])/(1-cutoff[type]);
+    var color2 = document.getElementById("styleInputStart_" + type).style.backgroundColor.replace(/[^\d,]/g, '').split(',');
+    var color1 = document.getElementById("styleInputEnd_" + type).style.backgroundColor.replace(/[^\d,]/g, '').split(',');
+    if (logscale[type]) {
+      level = Math.log10(level * 9 + 1)
+    }
+    var w = level * 2 - 1;
+    var w1 = (w/1+1) / 2;
+    var w2 = 1 - w1;
+    rgb = [Math.round(parseInt(color1[0]) * w1 + parseInt(color2[0]) * w2),
+        Math.round(parseInt(color1[1]) * w1 + parseInt(color2[1]) * w2),
+        Math.round(parseInt(color1[2]) * w1 + parseInt(color2[2]) * w2)];
+  }
   return "rgb(" + rgb[0] + "," + rgb[1] + ","+ rgb[2] + ")"
 }
 
-function draw_letter(index, character, level, annotations) {
+function draw_letter(index, character, level, annotations, mod_level, max_level, max_mod_level) {
   var letter = document.createElement("span");
   var curr_colors = [];
   for (k = 0; k < annotations.length; k++) {
@@ -197,8 +238,13 @@ function draw_letter(index, character, level, annotations) {
    }
 
   //sort curr_colors by order of annotation_colors
-  if (curr_colors.length > 0) {
+
+  if (curr_colors.length > 0 || mod_level > 0) {
       var curr_colors_sorted = [];
+      if (mod_level > 0) {
+        console.log(mod_level/max_mod_level)
+        curr_colors_sorted.push(level_to_color(mod_level/max_mod_level, 'mod'));
+      }
       for (var k = 0; k < annotation_colors.length; k++) {
         if (curr_colors.indexOf(annotation_colors[k]) >= 0) {
           curr_colors_sorted.push(annotation_colors[k]);
@@ -215,8 +261,7 @@ function draw_letter(index, character, level, annotations) {
       letter.style = style_str;
       //letter.style.color = "white";
   }
-  letter.style.color = level_to_color(level, false);
-
+  letter.style.color = level_to_color(level/max_level, 'coverage');
 
   letter.innerHTML = character;
   letter.addEventListener('click',function() {
@@ -238,14 +283,20 @@ function draw_sequence(sequence,annotation_considered,selection) {
   var sequence_html = document.getElementById("sequence");
   sequence_html.innerHTML = "";
   var letters = document.createElement("span");
+  var max_seq = Math.max(...seq.levels)
+  console.log(max_seq);
+  var max_mod = Math.max(...seq.mod_levels)
   for (i = 0; i < seq.characters.length; i++) {
         var outline_class = ""
+        var gap_outline_class = ""
         if (i == selection[0]) {
           outline_class = "select-top select-left select-bottom"
+          gap_outline_class = "select-top select-bottom"
         } else if (i == selection[1]) {
           outline_class = "select-top select-right select-bottom"
         } else if (i > selection[0] && i < selection[1]) {
           outline_class = "select-top select-bottom"
+          gap_outline_class = "select-top select-bottom"
         }
         var seq_block = document.createElement("span");
         seq_block.className = "outer";
@@ -253,14 +304,18 @@ function draw_sequence(sequence,annotation_considered,selection) {
         outer_seq_block.className = "outer";
 
         // Update letters
-        var letter = draw_letter(i,seq.characters[i],seq.levels[i],seq.annotations[i]);
+        var letter = draw_letter(i,seq.characters[i],seq.levels[i],seq.annotations[i],seq.mod_levels[i],max_seq,max_mod);
         letter.className = outline_class;
         letters.appendChild(letter);
 
         // Display block of position number + letters
-        if (i % space_width == space_width - 1) {
+        if (i % space_width == space_width - 1 || i == seq.characters.length - 1) {
           var header_number = document.createElement("div");
-          header_number.innerHTML = (i - i%space_width + 10);
+          if (i != seq.characters.length - 1) {
+            header_number.innerHTML = (i - i%space_width + 10);
+          } else {
+            header_number.innerHTML = "&nbsp;"
+          }
           header_number.className = "position_number";
           seq_block.appendChild(header_number);
 
@@ -269,13 +324,12 @@ function draw_sequence(sequence,annotation_considered,selection) {
           var top_space = document.createElement("div");
           top_space.className = "position_number";
           var bottom_space = document.createElement("span");
-          bottom_space.className = outline_class;
+          bottom_space.className = gap_outline_class;
           tall_space.className = "outer";
           top_space.innerHTML = "&nbsp";
           bottom_space.innerHTML = "&nbsp";
           tall_space.appendChild(top_space);
           tall_space.appendChild(bottom_space);
-
           seq_block.appendChild(letters);
           outer_seq_block.appendChild(seq_block);
           outer_seq_block.appendChild(tall_space);
@@ -286,11 +340,17 @@ function draw_sequence(sequence,annotation_considered,selection) {
 
 }
 function intialize() {
-  document.getElementById("styleInputStart").style.backgroundColor = "rgb(0,0,0)";
-  document.getElementById("styleInputEnd").style.backgroundColor = "rgb(255,0,0)";
+  document.getElementById("styleInputStart_coverage").style.backgroundColor = "rgb(0,0,0)";
+  document.getElementById("styleInputEnd_coverage").style.backgroundColor = "rgb(255,0,0)";
+  document.getElementById("styleInputStart_mod").style.backgroundColor = "rgb(255,255,255)";
+  document.getElementById("styleInputEnd_mod").style.backgroundColor = "rgb(0,255,0)";
   set_seq(function() {
+    updateCutoff('mod');
+    updateCutoff('coverage');
+    setSelection();
     draw_sequence(seq,"",selection);
     display_annotation_list(annotation_list);
-    updateGradient();
+    updateGradient('mod');
+    updateGradient('coverage');
   });
 }

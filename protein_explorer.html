@@ -6,17 +6,22 @@
 </head>
 <body onload="intialize()">
   <div id="colors">
-    <!-- <button class="jscolor
-        {valueElement:'valueInputStart', styleElement:'styleInputStart'}">
-        Start Color
-    </button> -->
-    <!-- Value: <input id="valueInput" value="ff6699"><br> -->
-    Intensity Gradient:
+    Coverage:
     <input class="jscolor
-        {valueElement:'valueInputStart', styleElement:'styleInputStart'}" id="styleInputStart" onmouseup="updateGradient()">
-   <span class="gradient" id="gradient">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        {valueElement:'valueInputStart_coverage', styleElement:'styleInputStart_coverage'}" id="styleInputStart_coverage" onmouseup="updateGradient('coverage')">
+    <span class="gradient" id="gradient_coverage">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
     <input class="jscolor
-        {valueElement:'valueInputEnd', styleElement:'styleInputEnd'}" id="styleInputEnd" onmouseup="updateGradient()">
+        {valueElement:'valueInputEnd_coverage', styleElement:'styleInputEnd_coverage'}" id="styleInputEnd_coverage" onmouseup="updateGradient('coverage')">
+        Cutoff: <input type="number" min="0" max="1" step="0.1" id="cutoff_percent_coverage" value="0" onchange="updateCutoff('coverage')">
+        Log scale: <input type="checkbox" id="log_scale_coverage" onchange="setLogscale('coverage')">
+    <br>Modifications:
+    <input class="jscolor
+        {valueElement:'valueInputStart_mod', styleElement:'styleInputStart_mod'}" id="styleInputStart_mod" onmouseup="updateGradient('mod')">
+    <span class="gradient" id="gradient_mod">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    <input class="jscolor
+        {valueElement:'valueInputEnd_mod', styleElement:'styleInputEnd_mod'}" id="styleInputEnd_mod" onmouseup="updateGradient('mod')">
+        Cutoff: <input type="number" min="0" max="1" step="0.1" id="cutoff_percent_mod" value="0" onchange="updateCutoff('mod')">
+        Log scale: <input type="checkbox" id="log_scale_mod" onchange="setLogscale('mod')">
   </div>
   <div id="annotation_list" class="mono">
   </div>
