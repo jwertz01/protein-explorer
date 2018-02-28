@@ -1,17 +1,11 @@
-<html>
-<head>
-  <script src="protein_explorer.js"></script>
-  <script src="lib/jscolor.js"></script>
-  <link rel="stylesheet" href="protein_explorer.css" />
-</head>
 <body onload="intialize()">
   <div id="all_colors">
     <div class="colortable">
       <div class="coverageinput">
-        <select id="coverage" onmouseup="updateAnnotations()">
-          <option value="spectrum_levels">Spectrum Coverage</option>
-          <option value="variant_levels">Variant Coverage</option>
-          <option value="peptide_levels">Peptide Coverage</option>
+        <select id="coverage">
+          <option value="spectrum">Spectrum Coverage</option>
+          <option value="variant">Variant Coverage</option>
+          <option value="peptide">Peptide Coverage</option>
         <select>
       </div>
       <div class="gradientinput">
@@ -26,9 +20,9 @@
     </div>
     <div class="colortable">
       <div class="coverageinput">
-        <select id="modification" onmouseup="updateAnnotations()">
-          <option value="mod_levels">Modification Point Coverage</option>
-          <option value="mod_region_levels">Modification Region Coverage</option>
+        <select id="modification">
+          <option value="just_mod">Modification Point Coverage</option>
+          <option value="mod_region">Modification Region Coverage</option>
         <select>
       </div>
       <div class="gradientinput">
@@ -84,4 +78,3 @@
   <div id="messages" class="mono">
   </div>
 </body>
-</html>

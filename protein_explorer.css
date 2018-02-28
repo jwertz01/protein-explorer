@@ -3,10 +3,55 @@
 	cursor: pointer;
 }
 .gradient {
-	width: 100px;
-	height: 30px;
+	width: 100%;
+	margin: 2px;
 }
-
+#all_annotations {
+	width: 49%;
+}
+.annotationoptions {
+	width: inherit;
+	display: flex;
+	border: 1px solid #000;
+	margin-bottom: -1px;
+}
+.annotationinput {
+	width:50%;
+	margin: -1px;
+	margin-right: 0px;
+	border: 1px solid #000;
+}
+.annotation-right {
+	margin-left: -1px;
+	margin-right: -1px;
+}
+#all_colors {
+	width:49%
+}
+.coverageinput {
+	margin-left: 2px;
+	width:33%
+}
+.select_gff {
+	margin-left: 2px;
+	width: 75%
+}
+.gff_color {
+	margin-left:10%;
+}
+.gradientinput {
+	display: flex;
+	width:34%
+}
+.optioninput {
+	margin-left: 5%;
+	width:33%
+}
+.colortable {
+	display: flex;
+	border: 1px solid #000;
+	margin-bottom: -1px;
+}
 .mono {
 	font-family: monospace;
   font-size: 22px;
@@ -36,8 +81,24 @@
   font-family: monospace;
   font-size: 12px;
   text-align: right;
+	line-height: 15px;
 }
 
 .outer {
 	float: left;
+	line-height: 30px;
+	vertical-align: top;
 }
+.letters {
+	display: flex;
+	margin-top:-3px !important;
+	line-height: 20px;
+}
+
+span.annotation { border-bottom:2px solid; }
+
+span.annotation span.annotation { padding-bottom:3px; }
+
+span.annotation span.annotation span.annotation { padding-bottom:6px; }
+
+span.annotation span.annotation span.annotation span.annotation { padding-bottom:9px; }

@@ -1,22 +1,26 @@
 var selection = [-1,-1];
-var cutoff = {'mod':0,'coverage':0};
+var cutoff = {'mod':0,'coverage':.4};
 var logscale = {'mod':false,'coverage':false};
-var display_annotations = [false,false,false,false,false,false,false];
+// var display_annotations = [false,false,false,false,false,false,false];
 /* var annotation_colors = ["blue","red","green","black","gray","teal","purple"]; */
-var annotation_colors = ["red","orange","gold","green","blue","purple","hotpink"];
-var annotation_list = ["Modified residue","Active site","Binding site","Disulfide bond","Glycosylation","Metal binding","Natural variant"];
-var annotation_to_pos = {"Modified residue":0,"Active site":1,"Binding site":2,"Disulfide bond":3,"Glycosylation":4,"Metal binding":5,"Natural variant":6};
+// var annotation_colors = ["red","orange","gold","green","blue","purple","hotpink"];
+// var annotation_list = ["Modified residue","Active site","Binding site","Disulfide bond","Glycosylation","Metal binding","Natural variant"];
+// var annotation_to_pos = {"Modified residue":0,"Active site":1,"Binding site":2,"Disulfide bond":3,"Glycosylation":4,"Metal binding":5,"Natural variant":6};
 var seq;
+
+function updateAnnotations() {
+  draw_sequence(seq,selection);
+}
 
 function updateCutoff(cutoff_id) {
   cutoff[cutoff_id] = parseFloat(document.getElementById("cutoff_percent_" + cutoff_id).value);
   updateGradient(cutoff_id);
-  draw_sequence(seq,"",selection);
+  draw_sequence(seq,selection);
 }
 
 function setLogscale(logscale_id) {
   logscale[logscale_id] = !logscale[logscale_id];
-  draw_sequence(seq,"",selection);
+  draw_sequence(seq,selection);
 }
 
 function setSelection() {
@@ -44,14 +48,21 @@ function updateGradient(gradient_id) {
   + percent_start + "%, white "
   + percent_start + "%, white "
   + percent + "%," + start_color + " " + percent + "%," + end_color + ")";
-  draw_sequence(seq,"",selection);
+  draw_sequence(seq,selection);
 }
 
 function set_seq(on_set) {
   var url_string = window.location.href
   var url = new URL(url_string);
   var c = url.searchParams.get("protein");
-  fetch("./maestro_sm.json")
+  var task = url.searchParams.get("task");
+  var query = encodeURIComponent(encodeURIComponent("#{\"ProteinID_input\":\"" + c + "\"}"))
+  var other_params = "&pageSize=30&offset=0&_=1519340865710"
+  var proteosafe_url_start = "https://proteomics2.ucsd.edu/ProteoSAFe/QueryResult?"
+  var complete_url = proteosafe_url_start + "task=" + task + "&file=" + file + "&query=" + query + other_params;
+  // var test_url = "mock_proteosafe.json"
+  fetch(complete_url)
+  // fetch(test_url)
   .then(
     function(response) {
       if (response.status !== 200) {
@@ -61,7 +72,8 @@ function set_seq(on_set) {
       }
       // Examine the text in the response
       response.json().then(function(data) {
-        seq = data[c];
+        seq = JSON.parse(decodeURIComponent(data["row_data"][0]["ProteinExpression"]));
+        console.log(seq);
         on_set();
       })
     }
@@ -85,124 +97,6 @@ function swap_clicked(is_clicked, object) {
   } else {
     object.style.backgroundColor = 'lightgray';
   }
-}
-
-function display_annotation_list(annotations) {
-    var annotations_html = document.getElementById("annotation_list");
-    var annotations_message = document.createElement("div");
-    annotations_message.innerHTML = "Select site types to highlight:"
-    annotations_message.className = "serif";
-
-    annotations_html.appendChild(annotations_message);
-    var annotation_one = document.createElement("span");
-    annotation_one.innerHTML = annotations[0];
-    annotation_one.addEventListener('click',function() {
-      swap_clicked(display_annotations[0],annotation_one);
-      display_annotations[0] = !display_annotations[0];
-      draw_sequence(seq,annotations[0],selection);
-    });
-    annotation_one.style.color = annotation_colors[0];
-    annotation_one.className = "serif";
-    annotation_one.style.cursor = "pointer";
-    annotations_html.appendChild(annotation_one);
-    var space = document.createElement("span");
-    space.innerHTML = "&nbsp";
-    annotations_html.appendChild(space);
-    var annotation_two = document.createElement("span");
-    annotation_two.innerHTML = annotations[1];
-    annotation_two.addEventListener('click',function() {
-      swap_clicked(display_annotations[1],annotation_two);
-      display_annotations[1] = !display_annotations[1];
-      draw_sequence(seq,annotations[1],selection);
-    });
-    annotation_two.style.color = annotation_colors[1];
-    annotation_two.className = "serif";
-    annotation_two.style.cursor = "pointer";
-    annotations_html.appendChild(annotation_two);
-    var annotation_three = document.createElement("span");
-    var space = document.createElement("span");
-    space.innerHTML = "&nbsp";
-    annotations_html.appendChild(space);
-    annotation_three.innerHTML = annotations[2];
-    annotation_three.addEventListener('click',function() {
-      swap_clicked(display_annotations[2],annotation_three);
-      display_annotations[2] = !display_annotations[2];
-      draw_sequence(seq,annotations[2],selection);
-    });
-    annotation_three.style.color = annotation_colors[2];
-    annotation_three.className = "serif";
-    annotation_three.style.cursor = "pointer";
-    annotations_html.appendChild(annotation_three);
-    var space = document.createElement("span");
-    space.innerHTML = "&nbsp";
-    annotations_html.appendChild(space);
-    var annotation_four = document.createElement("span");
-    annotation_four.innerHTML = annotations[3];
-    annotation_four.addEventListener('click',function() {
-      swap_clicked(display_annotations[3],annotation_four);
-      display_annotations[3] = !display_annotations[3];
-      draw_sequence(seq,annotations[3],selection);
-    });
-    annotation_four.style.color = annotation_colors[3];
-    annotation_four.className = "serif";
-    annotation_four.style.cursor = "pointer";
-    annotations_html.appendChild(annotation_four);
-    var space = document.createElement("span");
-    space.innerHTML = "&nbsp";
-    annotations_html.appendChild(space);
-    var annotation_five = document.createElement("span");
-    annotation_five.innerHTML = annotations[4];
-    annotation_five.className = "serif";
-    annotation_five.addEventListener('click',function() {
-      swap_clicked(display_annotations[4],annotation_five);
-      display_annotations[4] = !display_annotations[4];
-      draw_sequence(seq,annotations[4],selection);
-    });
-    annotation_five.style.color = annotation_colors[4];
-    annotation_five.style.cursor = "pointer";
-    annotations_html.appendChild(annotation_five);
-    var space = document.createElement("span");
-    space.innerHTML = "&nbsp";
-    annotations_html.appendChild(space);
-    var annotation_six = document.createElement("span");
-    annotation_six.innerHTML = annotations[5];
-    annotation_six.className = "serif";
-    annotation_six.addEventListener('click',function() {
-      swap_clicked(display_annotations[5],annotation_six);
-      display_annotations[5] = !display_annotations[5];
-      draw_sequence(seq,annotations[5],selection);
-    });
-    annotation_six.style.color = annotation_colors[5];
-    annotation_six.style.cursor = "pointer";
-    annotations_html.appendChild(annotation_six);
-    var space = document.createElement("span");
-    space.innerHTML = "&nbsp";
-    annotations_html.appendChild(space);
-    var annotation_seven = document.createElement("span");
-    annotation_seven.innerHTML = annotations[6];
-    annotation_seven.className = "serif";
-    annotation_seven.addEventListener('click',function() {
-      swap_clicked(display_annotations[6],annotation_seven);
-      display_annotations[6] = !display_annotations[6];
-      draw_sequence(seq,annotations[6],selection);
-    });
-    annotation_seven.style.color = annotation_colors[6];
-    annotation_seven.style.cursor = "pointer";
-    annotations_html.appendChild(annotation_seven);
-    // var space = document.createElement("span");
-    // space.innerHTML = "&nbsp";
-    // annotations_html.appendChild(space);
-    // var annotation_eight = document.createElement("span");
-    // annotation_eight.innerHTML = annotations[7];
-    // annotation_eight.className = "serif";
-    // annotation_eight.addEventListener('click',function() {
-    //   swap_clicked(display_annotations[7],annotation_eight);
-    //   display_annotations[7] = !display_annotations[7];
-    //   draw_sequence(seq,annotations[7],selection);
-    // });
-    // annotation_eight.style.color = annotation_colors[7];
-    // annotation_eight.style.cursor = "pointer";
-    // annotations_html.appendChild(annotation_eight);
 }
 
 function level_to_color(level,type) {
@@ -231,39 +125,35 @@ function draw_letter(index, character, level, annotations, mod_level, max_level,
   var letter = document.createElement("span");
   var curr_colors = [];
   for (k = 0; k < annotations.length; k++) {
-    var annotation_num = annotation_to_pos[annotations[k]];
-    if (display_annotations[annotation_num] && curr_colors.indexOf(annotation_colors[annotation_num]) < 0) {
-      curr_colors.push(annotation_colors[annotation_num]);
-    }
-   }
-
-  //sort curr_colors by order of annotation_colors
-
-  if (curr_colors.length > 0 || mod_level > 0) {
-      var curr_colors_sorted = [];
-      if (mod_level > 0) {
-        console.log(mod_level/max_mod_level)
-        curr_colors_sorted.push(level_to_color(mod_level/max_mod_level, 'mod'));
-      }
-      for (var k = 0; k < annotation_colors.length; k++) {
-        if (curr_colors.indexOf(annotation_colors[k]) >= 0) {
-          curr_colors_sorted.push(annotation_colors[k]);
+    var select_ids = ['annotation0','annotation1','annotation2','annotation3']
+      for (i = 0; i < select_ids.length; i++) {
+        if (annotations[k] == document.getElementById(select_ids[i]).value) {
+          curr_colors.push(document.getElementById("style_" + select_ids[i]).style.backgroundColor);
+          break;
         }
       }
+    }
 
-    /*Create background gradient with all relevant modification categories
-  e.g.  letter.style = "background:linear-gradient(to bottom, red 0%, red 33%, orange 33%, orange 66%, yellow 66%, yellow 100%);" */
-      var style_str = "text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;background:linear-gradient(to right, ";
+  if (mod_level > 0) {
+    letter.style.backgroundColor = level_to_color(mod_level, 'mod');
+  }
+
+  if (curr_colors.length > 0) {
+      var curr_colors_sorted = curr_colors;
+      prev = letter;
       for (var i = 0; i < curr_colors_sorted.length; i++) {
-        style_str += curr_colors_sorted[i] + " " + 100.0 * i / curr_colors_sorted.length + "%, " + curr_colors_sorted[i] + " " + 100.0 * (i + 1) / curr_colors_sorted.length + "%, ";
+        var inner = document.createElement("span");
+        inner.className = "annotation";
+        inner.style = "border-color:" + curr_colors_sorted[i]
+        prev.appendChild(inner);
+        prev = inner;
       }
-      style_str = style_str.substring(0, style_str.length - 2) + ");";
-      letter.style = style_str;
-      //letter.style.color = "white";
+      prev.innerHTML = character
+  } else {
+    letter.innerHTML = character;
   }
   letter.style.color = level_to_color(level/max_level, 'coverage');
 
-  letter.innerHTML = character;
   letter.addEventListener('click',function() {
     var url_string = window.location.href
     var url = new URL(url_string);
@@ -275,17 +165,21 @@ function draw_letter(index, character, level, annotations, mod_level, max_level,
     // display_position(index,character)
   });
   letter.style.cursor = "pointer";
+  letter.className = "letters";
   return letter;
 }
 
-function draw_sequence(sequence,annotation_considered,selection) {
+function draw_sequence(sequence,selection) {
+  var sequence_coverage_type = document.getElementById("coverage").value;
+  var modification_coverage_type = document.getElementById("modification").value;
   var space_width = 10;
   var sequence_html = document.getElementById("sequence");
   sequence_html.innerHTML = "";
   var letters = document.createElement("span");
-  var max_seq = Math.max(...seq.levels)
+  letters.className = "letters"
+  var max_seq = Math.max(...Object.values(seq.levels))
   console.log(max_seq);
-  var max_mod = Math.max(...seq.mod_levels)
+  var max_mod = Math.max(...Object.values(seq.mod_levels))
   for (i = 0; i < seq.characters.length; i++) {
         var outline_class = ""
         var gap_outline_class = ""
@@ -304,7 +198,20 @@ function draw_sequence(sequence,annotation_considered,selection) {
         outer_seq_block.className = "outer";
 
         // Update letters
-        var letter = draw_letter(i,seq.characters[i],seq.levels[i],seq.annotations[i],seq.mod_levels[i],max_seq,max_mod);
+        var string_num = i.toString();
+        var level = 0
+        var mod_level = 0
+        var annotations = []
+        if (string_num in seq[sequence_coverage_type]) {
+          level = seq[sequence_coverage_type][string_num]
+        }
+        if (string_num in seq.annotations) {
+          annotations = seq.annotations[string_num]
+        }
+        if (string_num in seq[modification_coverage_type]) {
+          mod_level = seq[modification_coverage_type][string_num]/seq.variant_levels[string_num]
+        }
+        var letter = draw_letter(i,seq.characters[i],level,annotations,mod_level,max_seq,max_mod);
         letter.className = outline_class;
         letters.appendChild(letter);
 
@@ -335,20 +242,44 @@ function draw_sequence(sequence,annotation_considered,selection) {
           outer_seq_block.appendChild(tall_space);
           sequence_html.appendChild(outer_seq_block);
           letters = document.createElement("span");
+          letters.className = "letters"
         }
   }
 
 }
+
+function setAnnotationInputs() {
+  var select_ids = ['annotation0','annotation1','annotation2','annotation3']
+  for (i = 0; i < select_ids.length; i++) {
+    var selected = document.getElementById(select_ids[i]);
+    for (j = 0; j < seq.all_annotations.length; j++) {
+      var option = document.createElement("option");
+      option.text = seq.all_annotations[j];
+      option.value = seq.all_annotations[j];
+      selected.add(option);
+      if (i == j) {
+        selected.value = seq.all_annotations[j];
+      }
+    }
+  }
+
+}
+
 function intialize() {
-  document.getElementById("styleInputStart_coverage").style.backgroundColor = "rgb(0,0,0)";
+  document.getElementById("styleInputStart_coverage").style.backgroundColor = "rgb(200,200,200)";
   document.getElementById("styleInputEnd_coverage").style.backgroundColor = "rgb(255,0,0)";
   document.getElementById("styleInputStart_mod").style.backgroundColor = "rgb(255,255,255)";
-  document.getElementById("styleInputEnd_mod").style.backgroundColor = "rgb(0,255,0)";
+  document.getElementById("styleInputEnd_mod").style.backgroundColor = "rgb(0,255,255)";
+  document.getElementById("style_annotation0").style.backgroundColor = "teal";
+  document.getElementById("style_annotation1").style.backgroundColor = "purple";
+  document.getElementById("style_annotation2").style.backgroundColor = "pink";
+  document.getElementById("style_annotation3").style.backgroundColor = "orange";
   set_seq(function() {
     updateCutoff('mod');
     updateCutoff('coverage');
     setSelection();
-    draw_sequence(seq,"",selection);
+    setAnnotationInputs();
+    draw_sequence(seq,selection);
     display_annotation_list(annotation_list);
     updateGradient('mod');
     updateGradient('coverage');
