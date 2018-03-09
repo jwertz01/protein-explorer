@@ -6,8 +6,22 @@
 	width: 100%;
 	margin: 2px;
 }
-#all_annotations {
-	width: 49%;
+#control_panel {
+	display: flex;
+}
+#input_control {
+	width: 74%;
+}
+#counts {
+	margin-left: 2%;
+	width: 50%;
+}
+.count_box {
+	margin-left: 2px;
+	width: inherit;
+	border: 1px solid #000;
+	display: flex;
+	margin-bottom: -1px;
 }
 .annotationoptions {
 	width: inherit;
@@ -24,9 +38,6 @@
 .annotation-right {
 	margin-left: -1px;
 	margin-right: -1px;
-}
-#all_colors {
-	width:49%
 }
 .coverageinput {
 	margin-left: 2px;
@@ -82,6 +93,7 @@
   font-size: 12px;
   text-align: right;
 	line-height: 15px;
+	margin-bottom: 4px;
 }
 
 .outer {
@@ -94,11 +106,57 @@
 	margin-top:-3px !important;
 	line-height: 20px;
 }
+.letter {
+	display: flex;
+	margin-top:-3px !important;
+	line-height: 20px;
+}
 
-span.annotation { border-bottom:2px solid; }
+span.structural_annotation { border-top:3px solid; }
 
-span.annotation span.annotation { padding-bottom:3px; }
+span.annotation { border-bottom:3px solid; }
 
-span.annotation span.annotation span.annotation { padding-bottom:6px; }
+span.annotation span.annotation { padding-bottom:4px; }
 
-span.annotation span.annotation span.annotation span.annotation { padding-bottom:9px; }
+span.annotation span.annotation span.annotation { padding-bottom:8px; }
+
+span.annotation span.annotation span.annotation span.annotation { padding-bottom:11px; }
+
+.letter {
+    position: relative;
+    display: inline-block;
+}
+
+.letter .tooltiptext {
+		font-size: 12px;
+    visibility: hidden;
+    width: 400px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -200px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.letter .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.letter:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}

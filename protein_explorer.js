@@ -8,6 +8,46 @@ var logscale = {'mod':false,'coverage':false};
 // var annotation_to_pos = {"Modified residue":0,"Active site":1,"Binding site":2,"Disulfide bond":3,"Glycosylation":4,"Metal binding":5,"Natural variant":6};
 var seq;
 
+var uniprot_categories = {'Amino acid modifications': ['Non-standard residue',
+  'Modified residue',
+  'Lipidation',
+  'Glycosylation',
+  'Disulfide bond',
+  'Cross-link'],
+ 'Experimental info': ['Mutagenesis',
+  'Sequence uncertainty',
+  'Sequence conflict',
+  'Non-adjacent residues',
+  'Non-terminal residue'],
+ 'Molecule processing': ['Initiator methionine',
+  'Signal peptide',
+  'Transit peptide',
+  'Propeptide',
+  'Chain',
+  'Peptide'],
+ 'Natural variations': ['Alternative sequence', 'Natural variant'],
+ 'Regions': ['Topological domain',
+  'Transmembrane',
+  'Intramembrane',
+  'Domain',
+  'Repeat',
+  'Calcium binding',
+  'Zinc finger',
+  'DNA binding',
+  'Nucleotide binding',
+  'Region',
+  'Coiled coil',
+  'Motif',
+  'Compositional bias'],
+ 'Secondary structure': ['Helix', 'Turn', 'Beta strand'],
+ 'Sites': ['Active site', 'Metal binding', 'Binding site', 'Site']}
+
+var secondary_structure_color = {
+  'Helix':'#7eb6ff',
+  'Turn':'#f0a',
+  'Beta strand':'#9aff9a'
+}
+
 function updateAnnotations() {
   draw_sequence(seq,selection);
 }
@@ -54,15 +94,17 @@ function updateGradient(gradient_id) {
 function set_seq(on_set) {
   var url_string = window.location.href
   var url = new URL(url_string);
+  var fetch_url = "mock_proteosafe.json";
   var c = url.searchParams.get("protein");
-  var task = url.searchParams.get("task");
-  var query = encodeURIComponent(encodeURIComponent("#{\"ProteinID_input\":\"" + c + "\"}"))
-  var other_params = "&pageSize=30&offset=0&_=1519340865710"
-  var proteosafe_url_start = "https://proteomics2.ucsd.edu/ProteoSAFe/QueryResult?"
-  var complete_url = proteosafe_url_start + "task=" + task + "&file=" + file + "&query=" + query + other_params;
-  // var test_url = "mock_proteosafe.json"
-  fetch(complete_url)
-  // fetch(test_url)
+  if (url.origin.indexOf("0.0.0.0") == -1) {
+    var task = url.searchParams.get("task");
+    var query = encodeURIComponent(encodeURIComponent("#{\"ProteinID_input\":\"" + c + "\"}"))
+    var other_params = "&pageSize=30&offset=0&_=1519340865710"
+    var proteosafe_url_start = "https://proteomics2.ucsd.edu/ProteoSAFe/QueryResult?"
+    fetch_url = proteosafe_url_start + "task=" + task + "&file=" + file + "&query=" + query + other_params;
+  }
+  console.log(fetch_url)
+  fetch(fetch_url)
   .then(
     function(response) {
       if (response.status !== 200) {
@@ -91,14 +133,6 @@ function display_position(pos,character) {
   message_html.innerHTML = "Clicked on amino acid " + character  + " at position " + (pos+1);
 }
 
-function swap_clicked(is_clicked, object) {
-  if (is_clicked) {
-    object.style.backgroundColor = 'white';
-  } else {
-    object.style.backgroundColor = 'lightgray';
-  }
-}
-
 function level_to_color(level,type) {
   var rgb = [211,211,211];
   if (type == 'mod') {
@@ -124,16 +158,44 @@ function level_to_color(level,type) {
 function draw_letter(index, character, level, annotations, mod_level, max_level, max_mod_level) {
   var letter = document.createElement("span");
   var curr_colors = [];
+  var struct_colors = [];
+  letter.className = "structural_annotation";
+  letter.style.borderTopColor = "#ccc";
+  var tooltip_text = "";
+  // console.log(annotations)
   for (k = 0; k < annotations.length; k++) {
-    var select_ids = ['annotation0','annotation1','annotation2','annotation3']
+    Object.keys(annotations[k]).sort().forEach(function(key) {
+      if (key in secondary_structure_color) {
+        letter.style.borderTopColor = secondary_structure_color[key];
+      }
+      var select_ids = ['annotation0','annotation1','annotation2','annotation3']
       for (i = 0; i < select_ids.length; i++) {
-        if (annotations[k] == document.getElementById(select_ids[i]).value) {
-          curr_colors.push(document.getElementById("style_" + select_ids[i]).style.backgroundColor);
-          break;
+        var selected = document.getElementById(select_ids[i]).value;
+        var selected_list = [selected];
+        if (selected in uniprot_categories) {
+          selected_list = uniprot_categories[selected];
+        }
+        for (s = 0; s < selected_list.length; s++) {
+          if (key == selected_list[s]) {
+            var color = document.getElementById("style_" + select_ids[i]).style.backgroundColor;
+            if (curr_colors.indexOf(color) == -1) {
+              curr_colors.push(document.getElementById("style_" + select_ids[i]).style.backgroundColor);
+            }
+            break;
+          }
         }
       }
-    }
+      if (annotations[k][key] != "") {
+        tooltip_text = tooltip_text + key + ": " + annotations[k][key] + "<br>";
+      } else {
+        tooltip_text = tooltip_text + key + "<br>";
+      }
+    });
+  }
 
+  var tooltip_var = document.createElement("span");
+  tooltip_var.innerHTML = tooltip_text;
+  tooltip_var.className = "tooltiptext";
   if (mod_level > 0) {
     letter.style.backgroundColor = level_to_color(mod_level, 'mod');
   }
@@ -144,7 +206,7 @@ function draw_letter(index, character, level, annotations, mod_level, max_level,
       for (var i = 0; i < curr_colors_sorted.length; i++) {
         var inner = document.createElement("span");
         inner.className = "annotation";
-        inner.style = "border-color:" + curr_colors_sorted[i]
+        inner.style = "border-bottom-color:" + curr_colors_sorted[i]
         prev.appendChild(inner);
         prev = inner;
       }
@@ -152,33 +214,48 @@ function draw_letter(index, character, level, annotations, mod_level, max_level,
   } else {
     letter.innerHTML = character;
   }
-  letter.style.color = level_to_color(level/max_level, 'coverage');
+  letter.style.color = level_to_color(level, 'coverage');
 
   letter.addEventListener('click',function() {
     var url_string = window.location.href
     var url = new URL(url_string);
     var c = url.searchParams.get("protein");
-    var url = "https://proteomics2.ucsd.edu/ProteoSAFe/result.jsp?task=5af9012897a643abaa8703341d6900ee&view=identified_variants#%7B%22Protein_input%22%3A%22"
+    var maestro_task = url.searchParams.get("maestro_task")
+    if (maestro_task == "") {
+      maestro_task = url.searchParams.get("task")
+    }
+    var url = "https://proteomics2.ucsd.edu/ProteoSAFe/result.jsp?task=" + maestro_task + "&view=identified_variants#%7B%22Protein_input%22%3A%22"
      + encodeURIComponent(c) +
      "%22%2C%22StartAA_upperinput%22%3A%22" + index + "%22%2C%22EndAA_lowerinput%22%3A%22" + index + "%22%7D"
     window.open(url,'_blank')
     // display_position(index,character)
   });
   letter.style.cursor = "pointer";
-  letter.className = "letters";
+  letter.className += " letter tooltip";
+  if (tooltip_text != "") {
+    letter.appendChild(tooltip_var);
+  }
   return letter;
 }
 
-function draw_sequence(sequence,selection) {
+function draw_sequence(seq,selection) {
   var sequence_coverage_type = document.getElementById("coverage").value;
+  console.log(sequence_coverage_type);
+  console.log(seq[sequence_coverage_type])
   var modification_coverage_type = document.getElementById("modification").value;
   var space_width = 10;
   var sequence_html = document.getElementById("sequence");
   sequence_html.innerHTML = "";
   var letters = document.createElement("span");
   letters.className = "letters"
-  var max_seq = Math.max(...Object.values(seq.levels))
+  var max_seq = {
+      'peptide_levels':Math.max(...Object.values(seq.peptide_levels)),
+      'variant_levels':Math.max(...Object.values(seq.variant_levels)),
+      'spectrum_levels':Math.max(...Object.values(seq.spectrum_levels)),
+      'modification_count':Math.max(...Object.values(seq.mod_region_levels))
+  }
   console.log(max_seq);
+  console.log(max_seq[sequence_coverage_type]);
   var max_mod = Math.max(...Object.values(seq.mod_levels))
   for (i = 0; i < seq.characters.length; i++) {
         var outline_class = ""
@@ -203,16 +280,20 @@ function draw_sequence(sequence,selection) {
         var mod_level = 0
         var annotations = []
         if (string_num in seq[sequence_coverage_type]) {
-          level = seq[sequence_coverage_type][string_num]
+          level = seq[sequence_coverage_type][string_num]/max_seq[sequence_coverage_type];
         }
         if (string_num in seq.annotations) {
           annotations = seq.annotations[string_num]
         }
         if (string_num in seq[modification_coverage_type]) {
-          mod_level = seq[modification_coverage_type][string_num]/seq.variant_levels[string_num]
+          if (modification_coverage_type == 'mod_region_levels') {
+            mod_level = seq[modification_coverage_type][string_num]
+          } else {
+            mod_level = seq[modification_coverage_type][string_num]/seq.variant_levels[string_num]
+          }
         }
         var letter = draw_letter(i,seq.characters[i],level,annotations,mod_level,max_seq,max_mod);
-        letter.className = outline_class;
+        letter.className = letter.className + " " + outline_class;
         letters.appendChild(letter);
 
         // Display block of position number + letters
@@ -250,19 +331,37 @@ function draw_sequence(sequence,selection) {
 
 function setAnnotationInputs() {
   var select_ids = ['annotation0','annotation1','annotation2','annotation3']
+  var count = 0;
   for (i = 0; i < select_ids.length; i++) {
     var selected = document.getElementById(select_ids[i]);
-    for (j = 0; j < seq.all_annotations.length; j++) {
-      var option = document.createElement("option");
-      option.text = seq.all_annotations[j];
-      option.value = seq.all_annotations[j];
-      selected.add(option);
-      if (i == j) {
-        selected.value = seq.all_annotations[j];
-      }
-    }
+    Object.keys(seq.all_annotations).sort().forEach(function(key) {
+      var option_type = document.createElement("optgroup");
+      option_type.label = key;
+      Object.keys(seq.all_annotations[key]).sort().forEach(function(annotation) {
+        var option = document.createElement("option");
+        option.text = annotation;
+        option.disabled = !seq.all_annotations[key][annotation];
+        if (annotation in uniprot_categories) {
+          option.text += "\xa0(";
+          var selected_list = uniprot_categories[annotation];
+          for (s = 0; s < selected_list.length; s++) {
+            if (s != 0) {
+              option.text += ",\xa0";
+            }
+            option.text += selected_list[s];
+          }
+          option.text += ")";
+        }
+        option.value = annotation;
+        option_type.appendChild(option);
+        if (i == count) {
+          selected.value = annotation;
+        }
+        count = count + 1;
+      });
+      selected.appendChild(option_type);
+    });
   }
-
 }
 
 function intialize() {
@@ -280,8 +379,12 @@ function intialize() {
     setSelection();
     setAnnotationInputs();
     draw_sequence(seq,selection);
-    display_annotation_list(annotation_list);
+    console.log(seq);
     updateGradient('mod');
     updateGradient('coverage');
+    document.getElementById("peptide_count").innerHTML = seq.peptide_count[-1];
+    document.getElementById("variant_count").innerHTML = seq.variant_count[-1];
+    document.getElementById("spectrum_count").innerHTML = seq.spectrum_count[-1];
+    document.getElementById("modification_count").innerHTML = seq.mod_count[-1];
   });
 }

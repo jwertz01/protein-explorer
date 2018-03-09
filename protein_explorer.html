@@ -5,72 +5,94 @@
   <link rel="stylesheet" href="protein_explorer.css" />
 </head>
 <body onload="intialize()">
-  <div id="all_colors">
-    <div class="colortable">
-      <div class="coverageinput">
-        <select id="coverage" onmouseup="updateAnnotations()">
-          <option value="spectrum_levels">Spectrum Coverage</option>
-          <option value="variant_levels">Variant Coverage</option>
-          <option value="peptide_levels">Peptide Coverage</option>
-        <select>
+  <div id="control_panel">
+    <div id="input_control">
+      <div id="all_colors">
+        <div class="colortable">
+          <div class="coverageinput">
+            <select id="coverage" onmouseup="updateAnnotations()">
+              <option value="spectrum_levels">Spectrum Coverage</option>
+              <option value="variant_levels">Variant Coverage</option>
+              <option value="peptide_levels">Peptide Coverage</option>
+            <select>
+          </div>
+          <div class="gradientinput">
+            <input class="jscolor {valueElement:'valueInputStart_coverage', styleElement:'styleInputStart_coverage'}" id="styleInputStart_coverage" onmouseup="updateGradient('coverage')">
+            <div class="gradient" id="gradient_coverage">&nbsp;</div>
+            <input class="jscolor {valueElement:'valueInputEnd_coverage', styleElement:'styleInputEnd_coverage'}" id="styleInputEnd_coverage" onmouseup="updateGradient('coverage')">
+          </div>
+          <div class="optioninput">
+            Cutoff: <input type="number" min="0" max="1" step="0.1" id="cutoff_percent_coverage" value="0" onchange="updateCutoff('coverage')">
+            Log scale: <input type="checkbox" id="log_scale_coverage" onchange="setLogscale('coverage')">
+          </div>
+        </div>
+        <div class="colortable">
+          <div class="coverageinput">
+            <select id="modification" onmouseup="updateAnnotations()">
+              <option value="mod_levels">Modification Point Coverage</option>
+              <option value="mod_region_levels">Modification Region Coverage</option>
+            <select>
+          </div>
+          <div class="gradientinput">
+            <input class="jscolor {valueElement:'valueInputStart_mod', styleElement:'styleInputStart_mod'}" id="styleInputStart_mod" onmouseup="updateGradient('mod')">
+            <div class="gradient" id="gradient_mod">&nbsp;</div>
+            <input class="jscolor {valueElement:'valueInputEnd_mod', styleElement:'styleInputEnd_mod'}" id="styleInputEnd_mod" onmouseup="updateGradient('mod')">
+          </div>
+          <div class="optioninput">
+            Cutoff: <input type="number" min="0" max="1" step="0.1" id="cutoff_percent_mod" value="0" onchange="updateCutoff('mod')">
+            Log scale: <input type="checkbox" id="log_scale_mod" onchange="setLogscale('mod')">
+          </div>
+        </div>
       </div>
-      <div class="gradientinput">
-        <input class="jscolor {valueElement:'valueInputStart_coverage', styleElement:'styleInputStart_coverage'}" id="styleInputStart_coverage" onmouseup="updateGradient('coverage')">
-        <div class="gradient" id="gradient_coverage">&nbsp;</div>
-        <input class="jscolor {valueElement:'valueInputEnd_coverage', styleElement:'styleInputEnd_coverage'}" id="styleInputEnd_coverage" onmouseup="updateGradient('coverage')">
-      </div>
-      <div class="optioninput">
-        Cutoff: <input type="number" min="0" max="1" step="0.1" id="cutoff_percent_coverage" value="0" onchange="updateCutoff('coverage')">
-        Log scale: <input type="checkbox" id="log_scale_coverage" onchange="setLogscale('coverage')">
+      <div id="all_annotations">
+        <div class="annotation_list">
+          <div class="annotationoptions">
+            <div class="annotationinput">
+              <select id="annotation0" class="select_gff" onmouseup="updateAnnotations()">
+                <option value="none"></option>
+              </select>
+              <input class="gff_color jscolor {valueElement:'value_annotation0', styleElement:'style_annotation0'}" id="style_annotation0" onmouseup="updateAnnotations()">
+            </div>
+            <div class="annotationinput annotation-right">
+              <select id="annotation1" class="select_gff" onmouseup="updateAnnotations()">
+                <option value="none"></option>
+              </select>
+              <input class="gff_color jscolor {valueElement:'value_annotation1', styleElement:'style_annotation1'}" id="style_annotation1" onmouseup="updateAnnotations()">
+            </div>
+          </div>
+          <div class="annotationoptions">
+            <div class="annotationinput">
+              <select id="annotation2" class="select_gff" onmouseup="updateAnnotations()">
+                <option value="none"></option>
+              </select>
+              <input class="gff_color jscolor {valueElement:'value_annotation2', styleElement:'style_annotation2'}" id="style_annotation2" onmouseup="updateAnnotations()">
+            </div>
+            <div class="annotationinput annotation-right">
+                <select id="annotation3" class="select_gff" onmouseup="updateAnnotations()">
+                  <option value="none"></option>
+                </select>
+                <input class="gff_color jscolor {valueElement:'value_annotation3', styleElement:'style_annotation3'}" id="style_annotation3" onmouseup="updateAnnotations()">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="colortable">
-      <div class="coverageinput">
-        <select id="modification" onmouseup="updateAnnotations()">
-          <option value="mod_levels">Modification Point Coverage</option>
-          <option value="mod_region_levels">Modification Region Coverage</option>
-        <select>
+    <div id="counts">
+      <div class="count_box">
+        Peptide Count:&nbsp;
+        <span id="peptide_count">0</span>
       </div>
-      <div class="gradientinput">
-        <input class="jscolor {valueElement:'valueInputStart_mod', styleElement:'styleInputStart_mod'}" id="styleInputStart_mod" onmouseup="updateGradient('mod')">
-        <div class="gradient" id="gradient_mod">&nbsp;</div>
-        <input class="jscolor {valueElement:'valueInputEnd_mod', styleElement:'styleInputEnd_mod'}" id="styleInputEnd_mod" onmouseup="updateGradient('mod')">
+      <div class="count_box">
+        Variant Count:&nbsp;
+        <span id="variant_count">0</span>
       </div>
-      <div class="optioninput">
-        Cutoff: <input type="number" min="0" max="1" step="0.1" id="cutoff_percent_mod" value="0" onchange="updateCutoff('mod')">
-        Log scale: <input type="checkbox" id="log_scale_mod" onchange="setLogscale('mod')">
+      <div class="count_box">
+        Spectrum Count:&nbsp;
+        <span id="spectrum_count">0</span>
       </div>
-    </div>
-  </div>
-  <div id="all_annotations">
-    <div class="annotation_list">
-      <div class="annotationoptions">
-        <div class="annotationinput">
-          <select id="annotation0" class="select_gff" onmouseup="updateAnnotations()">
-            <option value="none"></option>
-          </select>
-          <input class="gff_color jscolor {valueElement:'value_annotation0', styleElement:'style_annotation0'}" id="style_annotation0" onmouseup="updateAnnotations()">
-        </div>
-        <div class="annotationinput annotation-right">
-          <select id="annotation1" class="select_gff" onmouseup="updateAnnotations()">
-            <option value="none"></option>
-          </select>
-          <input class="gff_color jscolor {valueElement:'value_annotation1', styleElement:'style_annotation1'}" id="style_annotation1" onmouseup="updateAnnotations()">
-        </div>
-      </div>
-      <div class="annotationoptions">
-        <div class="annotationinput">
-          <select id="annotation2" class="select_gff" onmouseup="updateAnnotations()">
-            <option value="none"></option>
-          </select>
-          <input class="gff_color jscolor {valueElement:'value_annotation2', styleElement:'style_annotation2'}" id="style_annotation2" onmouseup="updateAnnotations()">
-        </div>
-        <div class="annotationinput annotation-right">
-            <select id="annotation3" class="select_gff" onmouseup="updateAnnotations()">
-              <option value="none"></option>
-            </select>
-            <input class="gff_color jscolor {valueElement:'value_annotation3', styleElement:'style_annotation3'}" id="style_annotation3" onmouseup="updateAnnotations()">
-        </div>
+      <div class="count_box">
+        Putative Modification Count:&nbsp;
+        <span id="modification_count">0</span>
       </div>
     </div>
   </div>
